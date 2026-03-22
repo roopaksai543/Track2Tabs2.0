@@ -38,4 +38,6 @@ The project is currently in an early working state.
 
 
 
-<sub><span style="color:gray; font-style: italic;">by roopaksai543</span></sub>
+<span style="opacity: 0.5; font-family: cursive;">
+by Roopaksai Sivakumar
+</span>
