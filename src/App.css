@@ -40,3 +40,29 @@
 .read-the-docs {
   color: #888;
 }
+
+:root{
+  --bg: #0b0b10;
+  --card: rgba(255,255,255,0.04);
+  --card2: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.10);
+
+  /* Lavender accent */
+  --lav: #a78bfa;          /* lavender */
+  --lav2: #c4b5fd;         /* lighter lavender */
+  --lavGlow: rgba(167,139,250,0.35);
+
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.62);
+}
+
+html, body {
+  background: radial-gradient(1200px 800px at 20% 0%, rgba(167,139,250,0.20), transparent 60%),
+              radial-gradient(900px 600px at 90% 20%, rgba(167,139,250,0.12), transparent 60%),
+              var(--bg);
+  color: var(--text);
+}
+
+* { box-sizing: border-box; }
+
+a { color: var(--lav2); }
