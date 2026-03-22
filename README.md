@@ -36,6 +36,6 @@ The project is currently in an early working state.
 - Deploy a stable, fully integrated backend
 - Allow users to download results (tabs, chord sheets, etc.)
 
----
 
-**by roopaksai543**
+
+<sub><span style="color:gray; font-style: italic;">by roopaksai543</span></sub>
