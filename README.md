@@ -1,3 +1,5 @@
+# Track2Tabs 2.0
+
 ## Description
 Track2Tabs 2.0 is a web-based application that analyzes audio files and generates musical insights such as chord progressions and tempo. The goal of the project is to make it easier for musicians—especially beginners—to understand and learn songs directly from audio.
 
