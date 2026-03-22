@@ -38,6 +38,6 @@ The project is currently in an early working state.
 
 
 
-<span style="opacity: 0.5; font-family: cursive;">
-by Roopaksai Sivakumar
+<span style="color: rgba(0, 0, 0, 0.5); font-family: 'Brush Script MT', cursive;">
+Your text here
 </span>
