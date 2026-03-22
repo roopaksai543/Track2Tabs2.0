@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { simplifyTimeline } from "./lib/simplifyTimeline";
 
-import { analyzeWithBackend } from "./lib/backendApi";
+import { analyzeWithBackend } from "./lib/backendAPI";
 import { decodeAudioFile, toMono } from "./lib/audio"; // ✅ add back for BPM estimation
 
 import PlayerWithChords from "./components/PlayerWithChords";
