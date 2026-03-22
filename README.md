@@ -38,7 +38,13 @@ The project is currently in an early working state.
 
 
 
+<hr>
 
-
-Developed by **Roopaksai Sivakumar**  
-Computer Engineering @ UC Irvine
+<p align="center">
+  <sub>
+    <i>
+      Built by <b>Roopaksai Sivakumar</b><br>
+      Computer Engineering @ UC Irvine
+    </i>
+  </sub>
+</p>
