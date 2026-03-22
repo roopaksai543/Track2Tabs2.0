@@ -1,16 +1,39 @@
-# React + Vite
+## Description
+Track2Tabs 2.0 is a web-based application that analyzes audio files and generates musical insights such as chord progressions and tempo. The goal of the project is to make it easier for musicians—especially beginners—to understand and learn songs directly from audio.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Users can upload an audio file, and the app processes it using audio analysis techniques to extract meaningful musical information in a simple and intuitive interface.
 
-Currently, two official plugins are available:
+## Live Website
+[Insert your Vercel link here]
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Current Status
+The project is currently in an early working state.
 
-## React Compiler
+### What it can do:
+- Upload and play audio files
+- Process audio using a backend pipeline
+- Analyze chord progressions (currently works best for audio with only guitar chords)
+- Estimate tempo (BPM)
+- Supports `.mp3` and `.wav` audio files
+- Provide a simple UI for interaction
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Current limitations:
+- Works reliably only for audio that contains mostly isolated guitar chords
+- Accuracy of chord detection can vary with complex mixes (drums, vocals, etc.)
+- Backend processing may be slow for longer tracks
+- Deployment is split (frontend vs backend)
+- Some edge-case errors still occur during analysis
 
-## Expanding the ESLint configuration
+## Future Plans
+- Improve chord detection accuracy using better ML models
+- Add proper stem separation (separating drums, vocals, etc.)
+- Optimize audio processing speed
+- Add support for full-song analysis (better segmentation)
+- Enhance UI/UX for a more polished experience
+- Add visualizations (waveform, chord timeline, etc.)
+- Deploy a stable, fully integrated backend
+- Allow users to download results (tabs, chord sheets, etc.)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+**by roopaksai543**
