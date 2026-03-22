@@ -38,8 +38,6 @@ The project is currently in an early working state.
 
 
 
-<hr>
-
 <p align="center">
   <sub>
     <i>
