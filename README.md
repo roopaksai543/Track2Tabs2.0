@@ -38,6 +38,5 @@ The project is currently in an early working state.
 
 
 
-<span style="color: rgba(0, 0, 0, 0.5); font-family: 'Brush Script MT', cursive;">
-Your text here
-</span>
+Developed by **Roopaksai Sivakumar**  
+Computer Engineering @ UC Irvine
