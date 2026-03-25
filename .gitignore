@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 backend/tmp/
+*.mp3
+*.wav
+
+# ignore old backup models, but keep the live model files
+ml/artifacts/backup_old_model/
