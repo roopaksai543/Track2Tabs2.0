@@ -5,6 +5,8 @@ Track2Tabs 2.0 is a web-based application that analyzes audio files and generate
 
 Users can upload an audio file, and the app processes it using audio analysis techniques to extract meaningful musical information in a simple and intuitive interface.
 
+This project currently runs locally on my machine while deployment is being finalized. Public hosting will be added in a future update.
+
 ## Live Website
 [Track2Tabs 2.0](https://track2tabs20-git-main-roopaksais-projects-f8ff8358.vercel.app/)
 
@@ -32,7 +34,7 @@ See full version history and updates [here](https://github.com/roopaksai543/Trac
 - Better handling fo melody vs harmony seperation
 - Improve chord labeling consistency
 - Add support for more chord types and extensions
-
+- Add backend hosted on Railway
 
 <p align="center">
   <sub>
