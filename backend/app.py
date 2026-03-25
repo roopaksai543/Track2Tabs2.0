@@ -13,8 +13,9 @@ from stem_seperate import separate_stems
 
 
 APP_DIR = Path(__file__).parent
-TMP_DIR = APP_DIR / "tmp"
-ML_DIR = APP_DIR.parent / "ml"
+ROOT_DIR = APP_DIR.parent  # go up from backend → project root
+
+ML_DIR = ROOT_DIR / "ml"
 ARTIFACTS_DIR = ML_DIR / "artifacts"
 
 MODEL_PATH = ARTIFACTS_DIR / "chord_sequence_model.pt"
