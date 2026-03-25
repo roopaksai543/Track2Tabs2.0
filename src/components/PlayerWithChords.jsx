@@ -1,27 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getActiveChord } from "../lib/chordTiming";
 
 export default function PlayerWithChords({ file, timeline }) {
   const audioRef = useRef(null);
   const rafRef = useRef(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [t, setT] = useState(0); // current time in seconds
+  const [t, setT] = useState(0);
   const [dur, setDur] = useState(0);
 
   const audioUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
 
-  const active = useMemo(() => getActiveChord(timeline, t), [timeline, t]);
+  // ✅ NEW: compute active chord using start/end
+  const active = useMemo(() => {
+    if (!timeline || timeline.length === 0) return null;
+
+    return timeline.find(
+      (c) => t >= c.start && t < c.end
+    );
+  }, [timeline, t]);
 
   useEffect(() => {
-    // cleanup object URL
     return () => {
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
   }, [audioUrl]);
 
   useEffect(() => {
-    // stop raf on unmount
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
@@ -30,6 +34,7 @@ export default function PlayerWithChords({ file, timeline }) {
   function tick() {
     const el = audioRef.current;
     if (!el) return;
+
     setT(el.currentTime || 0);
     rafRef.current = requestAnimationFrame(tick);
   }
@@ -49,6 +54,7 @@ export default function PlayerWithChords({ file, timeline }) {
   function seek(newT) {
     const el = audioRef.current;
     if (!el) return;
+
     el.currentTime = newT;
     setT(newT);
   }
@@ -57,7 +63,7 @@ export default function PlayerWithChords({ file, timeline }) {
 
   return (
     <div style={{ border: "1px solid #ddd", padding: 16, borderRadius: 12, marginTop: 16 }}>
-      <h3  style={{fontSize: 30}} >Player</h3>
+      <h3 style={{ fontSize: 30 }}>Player</h3>
 
       <div style={{ fontSize: 44, fontWeight: 700, margin: "10px 0" }}>
         {active ? active.chord : "—"}
@@ -82,6 +88,7 @@ export default function PlayerWithChords({ file, timeline }) {
           onChange={(e) => seek(parseFloat(e.target.value))}
           style={{ width: "100%" }}
         />
+
         <div style={{ color: "#555", marginTop: 6 }}>
           {t.toFixed(2)}s / {dur ? dur.toFixed(2) : "?"}s {isPlaying ? "(playing)" : "(paused)"}
         </div>

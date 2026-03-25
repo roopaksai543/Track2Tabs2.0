@@ -1,30 +1,28 @@
-import shutil
 import uuid
 from pathlib import Path
 
-import soundfile as sf
 import librosa
-
-
 import numpy as np
+import soundfile as sf
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 
-from dsp_features import windowed_feature_seq
-from chord_infer import ChordModel
+from chord_infer import ChordInferenceEngine
 from stem_seperate import separate_stems
 
 
 APP_DIR = Path(__file__).parent
 TMP_DIR = APP_DIR / "tmp"
-MODELS_DIR = APP_DIR / "models"
-MODEL_PATH = MODELS_DIR / "chord_model_2.json" # Model used
+ML_DIR = APP_DIR.parent / "ml"
+ARTIFACTS_DIR = ML_DIR / "artifacts"
+
+MODEL_PATH = ARTIFACTS_DIR / "chord_sequence_model.pt"
+LABELS_PATH = ARTIFACTS_DIR / "chord_labels.json"
 
 TMP_DIR.mkdir(exist_ok=True)
-MODELS_DIR.mkdir(exist_ok=True)
 
-model = ChordModel(str(MODEL_PATH))
+engine = ChordInferenceEngine(str(MODEL_PATH), str(LABELS_PATH))
 
 app = FastAPI()
 
@@ -48,12 +46,15 @@ def load_wav_mono(path: str):
 
 def estimate_tempo(audio, sr):
     tempo, _ = librosa.beat.beat_track(y=audio, sr=sr)
+    tempo = np.asarray(tempo).squeeze()
 
-    # librosa may return a scalar or a numpy array depending on version/setup
-    if hasattr(tempo, "__len__"):
-        tempo = tempo[0] if len(tempo) > 0 else 0.0
+    if tempo.ndim == 0:
+        return float(tempo)
 
-    return float(tempo)
+    if tempo.size > 0:
+        return float(tempo.flat[0])
+
+    return 0.0
 
 
 @app.get("/health")
@@ -90,30 +91,7 @@ async def analyze(file: UploadFile = File(...)):
 
         bpm = estimate_tempo(drums, sr_d)
 
-        seq = windowed_feature_seq(melody, sr, window_sec=1.0, hop_sec=0.5)
-
-        timeline = []
-        last = None
-
-        for t0, feat in seq:
-            chord, conf, _ = model.predict(feat)
-
-            if conf < 0.40:
-                chord = last
-
-            if chord is None:
-                continue
-
-            if chord != last:
-                timeline.append(
-                    {
-                        "time": float(t0),
-                        "chord": chord,
-                        "confidence": float(conf),
-                    }
-                )
-
-            last = chord
+        timeline = engine.predict_file(melody_path)
 
         return {
             "timeline": timeline,

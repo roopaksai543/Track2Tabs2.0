@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { simplifyTimeline } from "./lib/simplifyTimeline";
 
 import { analyzeWithBackend } from "./lib/backendAPI";
-import { decodeAudioFile, toMono } from "./lib/audio"; // ✅ add back for BPM estimation
+import { decodeAudioFile, toMono } from "./lib/audio";
 
 import PlayerWithChords from "./components/PlayerWithChords";
 import { addBarNumbers } from "./lib/bars";
@@ -37,37 +37,37 @@ export default function App() {
     setTimelineWithBars([]);
 
     try {
-      // 1) Run backend chord analysis
       const data = await analyzeWithBackend(file);
-      const result = data.timeline || [];
+      const result = Array.isArray(data?.timeline) ? data.timeline : [];
       setTimeline(result);
 
       if (result.length === 0) {
-        setError("No confident chords found. Try a different section or file.");
+        setError("No chords found. Try a different section or file.");
         return;
       }
 
-      // 2) Decide BPM (auto or manual)
       let useBpm = bpm;
 
       if (autoBpm) {
         try {
-          const { audioBuffer } = await decodeAudioFile(file);
-          const mono = toMono(audioBuffer);
+          if (Number.isFinite(data?.tempo) && data.tempo >= 40 && data.tempo <= 240) {
+            useBpm = Math.round(data.tempo);
+            setBpm(useBpm);
+          } else {
+            const { audioBuffer } = await decodeAudioFile(file);
+            const mono = toMono(audioBuffer);
+            const estimated = estimateBPM(mono, audioBuffer.sampleRate);
 
-          const estimated = estimateBPM(mono, audioBuffer.sampleRate);
-
-          // Basic sanity bounds
-          if (Number.isFinite(estimated) && estimated >= 40 && estimated <= 240) {
-            useBpm = estimated;
-            setBpm(estimated);
+            if (Number.isFinite(estimated) && estimated >= 40 && estimated <= 240) {
+              useBpm = Math.round(estimated);
+              setBpm(useBpm);
+            }
           }
         } catch {
-          // If BPM estimation fails, we keep the existing bpm value silently.
+          // keep current BPM if auto-detection fails
         }
       }
 
-      // 3) Add bar numbers using chosen BPM
       const withBars = addBarNumbers(result, useBpm, beatsPerBar);
       setTimelineWithBars(withBars);
     } catch (e) {
@@ -102,7 +102,12 @@ export default function App() {
         }}
       >
         <h3 style={{ fontSize: 30 }}>Upload</h3>
-        <input type="file" accept="audio/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+
+        <input
+          type="file"
+          accept="audio/*"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
 
         {file && (
           <p style={{ marginTop: 8 }}>
@@ -121,14 +126,17 @@ export default function App() {
         {error && <p style={{ color: "crimson", marginTop: 10 }}>{error}</p>}
       </div>
 
-      {/* Audio player + live chord pop-up */}
       <PlayerWithChords file={file} timeline={displayTimeline} />
 
       <div style={{ marginTop: 16, border: "1px solid #ddd", padding: 16, borderRadius: 12 }}>
         <h3 style={{ fontSize: 30 }}>Settings</h3>
 
         <label style={{ display: "block", marginTop: 10 }}>
-          <input type="checkbox" checked={easyMode} onChange={(e) => setEasyMode(e.target.checked)} />{" "}
+          <input
+            type="checkbox"
+            checked={easyMode}
+            onChange={(e) => setEasyMode(e.target.checked)}
+          />{" "}
           Easy mode (simplify progression)
         </label>
 
@@ -148,7 +156,11 @@ export default function App() {
         <hr style={{ margin: "16px 0" }} />
 
         <label style={{ display: "block", marginTop: 10 }}>
-          <input type="checkbox" checked={autoBpm} onChange={(e) => setAutoBpm(e.target.checked)} />{" "}
+          <input
+            type="checkbox"
+            checked={autoBpm}
+            onChange={(e) => setAutoBpm(e.target.checked)}
+          />{" "}
           Auto-detect BPM (tempo)
         </label>
 
@@ -194,8 +206,7 @@ export default function App() {
           <ul>
             {displayTimeline.map((x, idx) => (
               <li key={idx}>
-                <b>{x.chord}</b> @ {x.time.toFixed(2)}s{" "}
-                {typeof x.confidence === "number" ? `(conf ${x.confidence.toFixed(2)})` : ""}
+                <b>{x.chord}</b> @ {Number(x.start).toFixed(2)}s → {Number(x.end).toFixed(2)}s
               </li>
             ))}
           </ul>

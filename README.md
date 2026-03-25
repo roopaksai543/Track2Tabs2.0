@@ -1,48 +1,46 @@
 # Track2Tabs 2.0
 
-## Description
-Track2Tabs 2.0 is a web-based application that analyzes audio files and generates musical insights such as chord progressions and tempo. The goal of the project is to make it easier for musicians—especially beginners—to understand and learn songs directly from audio.
+Track2Tabs is a web app that takes in an audio file and generates a chord timeline along with tempo detection. It uses machine learning and signal processing to analyze music and extract harmonic structure.
 
-Users can upload an audio file, and the app processes it using audio analysis techniques to extract meaningful musical information in a simple and intuitive interface.
+---
 
-## Live Website
-[Track2Tabs 2.0](https://track2tabs20-git-main-roopaksais-projects-f8ff8358.vercel.app/)
+## 🔗 Changelog
+See full version history and updates here:  
+➡️ [CHANGELOG.md](./CHANGELOG.md)
 
-## Current Status
-The project is currently in an early working state.
+---
 
-### What it can do:
-- Upload and play audio files
-- Process audio using a backend pipeline
-- Analyze chord progressions (currently works best for audio with only guitar chords)
-- Estimate tempo (BPM)
-- Supports `.mp3` and `.wav` audio files
-- Provide a simple UI for interaction
+## 🌐 Live Website
+[Insert your deployed link here]
 
-### Current limitations:
-- Works reliably only for audio that contains mostly isolated guitar chords
-- Accuracy of chord detection can vary with complex mixes (drums, vocals, etc.)
-- Backend processing may be slow for longer tracks
-- Deployment is split (frontend vs backend)
-- Some edge-case errors still occur during analysis
+---
 
-## Future Plans
-- Improve chord detection accuracy using better ML models
-- Add proper stem separation (separating drums, vocals, etc.)
-- Optimize audio processing speed
-- Add support for full-song analysis (better segmentation)
-- Enhance UI/UX for a more polished experience
-- Add visualizations (waveform, chord timeline, etc.)
-- Deploy a stable, fully integrated backend
-- Allow users to download results (tabs, chord sheets, etc.)
+## ⚙️ Current Status (v0.2.0 - 2026-03-23)
 
+- Supports **MP3 and WAV file uploads**
+- Performs **stem separation** to isolate melody and drums
+- Detects **tempo (BPM)** automatically
+- Uses a **sequence-based PyTorch model** for chord prediction
+- Displays a **chord timeline synced with audio playback**
 
+### ✅ Works well for:
+- Audio with **clear guitar or harmonic background**
+- Simpler chord progressions
 
-<p align="center">
-  <sub>
-    <i>
-      Built by <b>Roopaksai Sivakumar</b><br>
-      Computer Engineering @ UC Irvine
-    </i>
-  </sub>
-</p>
+### ⚠️ Limitations:
+- Less accurate with **dense mixes / heavy melodies**
+- Still struggles with **complex layered instrumentation**
+
+---
+
+## 🚀 Planned Improvements
+
+- Improve accuracy on **full songs with complex arrangements**
+- Train on **more realistic and diverse data**
+- Better handling of **melody vs harmony separation**
+- Improve **chord labeling consistency**
+- Add support for **more chord types and extensions**
+
+---
+
+## ✍️ _By roopaksai543_

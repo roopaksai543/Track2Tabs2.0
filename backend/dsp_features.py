@@ -1,63 +1,79 @@
+import warnings
+
 import numpy as np
 import librosa
 
 
-def _safe_chroma_cqt(seg, sr):
-    try:
-        chroma = librosa.feature.chroma_cqt(
-            y=seg,
+def load_audio(path, sr=22050):
+    y, sr = librosa.load(path, sr=sr, mono=True)
+    return y, sr
+
+
+def ensure_min_length(y, min_len=2048):
+    if len(y) >= min_len:
+        return y.astype(np.float32)
+
+    pad_amount = min_len - len(y)
+    y = np.pad(y, (0, pad_amount), mode="constant")
+    return y.astype(np.float32)
+
+
+def harmonic_only(y):
+    y = ensure_min_length(y, min_len=2048)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        y_harm, _ = librosa.effects.hpss(y)
+
+    return y_harm.astype(np.float32)
+
+
+def extract_feature_sequence(y, sr, hop_length=512):
+    y = ensure_min_length(y, min_len=2048)
+    y = harmonic_only(y)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+
+        chroma_cqt = librosa.feature.chroma_cqt(
+            y=y,
             sr=sr,
-            bins_per_octave=36
+            hop_length=hop_length,
         )
-        if chroma.shape[1] == 0:
-            return np.zeros(12, dtype=np.float32)
-        return np.mean(chroma, axis=1).astype(np.float32)
-    except Exception:
-        return np.zeros(12, dtype=np.float32)
 
-
-def _safe_chroma_stft(seg, sr):
-    try:
-        n_fft = min(2048, len(seg))
-        if n_fft < 32:
-            return np.zeros(12, dtype=np.float32)
-
-        n_fft = max(32, 2 ** int(np.floor(np.log2(n_fft))))
-        hop_length = max(16, n_fft // 4)
-
-        chroma = librosa.feature.chroma_stft(
-            y=seg,
+        chroma_cens = librosa.feature.chroma_cens(
+            y=y,
             sr=sr,
-            n_fft=n_fft,
-            hop_length=hop_length
+            hop_length=hop_length,
         )
-        if chroma.shape[1] == 0:
-            return np.zeros(12, dtype=np.float32)
-        return np.mean(chroma, axis=1).astype(np.float32)
-    except Exception:
-        return np.zeros(12, dtype=np.float32)
+
+        tonnetz = librosa.feature.tonnetz(
+            y=y,
+            sr=sr,
+        )
+
+    min_frames = min(
+        chroma_cqt.shape[1],
+        chroma_cens.shape[1],
+        tonnetz.shape[1],
+    )
+
+    if min_frames <= 0:
+        return np.zeros((0, 30), dtype=np.float32)
+
+    chroma_cqt = chroma_cqt[:, :min_frames]
+    chroma_cens = chroma_cens[:, :min_frames]
+    tonnetz = tonnetz[:, :min_frames]
+
+    feats = np.vstack([chroma_cqt, chroma_cens, tonnetz])   # [features, frames]
+    feats = feats.T.astype(np.float32)                      # [frames, features]
+
+    return feats
 
 
-def windowed_feature_seq(y, sr, window_sec=1.0, hop_sec=0.5):
-    win = int(window_sec * sr)
-    hop = int(hop_sec * sr)
-
-    if win <= 0 or hop <= 0:
-        return []
-
-    seq = []
-
-    for start in range(0, max(1, len(y) - win + 1), hop):
-        seg = y[start:start + win]
-
-        if len(seg) < max(32, win // 4):
-            continue
-
-        feat_cqt = _safe_chroma_cqt(seg, sr)
-        feat_stft = _safe_chroma_stft(seg, sr)
-
-        feat = np.concatenate([feat_cqt, feat_stft]).astype(np.float32)
-
-        seq.append((start / sr, feat))
-
-    return seq
+def get_frame_times(num_frames, sr, hop_length=512):
+    return librosa.frames_to_time(
+        np.arange(num_frames),
+        sr=sr,
+        hop_length=hop_length,
+    )
