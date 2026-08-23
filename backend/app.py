@@ -1,3 +1,4 @@
+import os
 import uuid
 from pathlib import Path
 
@@ -29,10 +30,16 @@ engine = ChordInferenceEngine(str(MODEL_PATH), str(LABELS_PATH))
 
 app = FastAPI()
 
+allowed_origins = [
+    origin.strip()
+    for origin in os.environ.get("ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=allowed_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
