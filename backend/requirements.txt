@@ -7,3 +7,4 @@ soundfile
 torch
 torchaudio
 scipy
+demucs==4.0.1

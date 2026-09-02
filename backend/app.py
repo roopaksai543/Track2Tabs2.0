@@ -1,4 +1,5 @@
 import os
+import shutil
 import uuid
 from pathlib import Path
 
@@ -78,7 +79,8 @@ async def analyze(file: UploadFile = File(...)):
     job_dir = TMP_DIR / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
 
-    filename = file.filename or "input_audio.wav"
+    # Discard any directory components supplied by the client.
+    filename = Path(file.filename or "input_audio.wav").name
     input_path = job_dir / filename
 
     try:
@@ -113,7 +115,5 @@ async def analyze(file: UploadFile = File(...)):
         return {"error": str(e)}
 
     finally:
-        # keep temp files for debugging for now
-        # uncomment this later when everything works
-        # shutil.rmtree(job_dir, ignore_errors=True)
-        pass
+        await file.close()
+        shutil.rmtree(job_dir, ignore_errors=True)

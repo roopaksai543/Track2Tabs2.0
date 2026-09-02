@@ -5,10 +5,40 @@ Track2Tabs 2.0 is a web-based application that analyzes audio files and generate
 
 Users can upload an audio file, and the app processes it using audio analysis techniques to extract meaningful musical information in a simple and intuitive interface.
 
-This project currently runs locally on my machine while deployment is being finalized. Public hosting will be added in a future update.
+The Vite frontend can be hosted on Vercel and the audio-analysis API on Railway.
 
 ## Live Website
 [Track2Tabs 2.0](https://track2tabs20-git-main-roopaksais-projects-f8ff8358.vercel.app/)
+
+## Deploy the backend to Railway
+
+1. Push this repository to GitHub.
+2. In Railway, choose **New Project → Deploy from GitHub repo** and select this repository. Railway automatically detects the root `Dockerfile`.
+3. In the service settings, set the health-check path to `/health` and generate a public domain under **Networking**.
+4. In the Railway service's **Variables** tab, add:
+
+   ```text
+   ALLOWED_ORIGINS=https://your-frontend-domain.vercel.app
+   ```
+
+   Multiple allowed origins can be supplied as a comma-separated list. Do not add a trailing slash.
+
+5. In the Vercel project's environment variables, add the Railway public URL (without a trailing slash):
+
+   ```text
+   VITE_API_BASE=https://your-backend.up.railway.app
+   ```
+
+6. Redeploy the Vercel frontend so Vite includes the new value in its production build.
+7. Verify the backend before uploading a song:
+
+   ```sh
+   curl https://your-backend.up.railway.app/health
+   ```
+
+   It should return `{"ok":true}`.
+
+The Docker image includes Demucs's pretrained model. Audio processing is CPU- and memory-intensive, so increase the Railway service's resources if it is terminated while analyzing longer tracks. Uploaded files and generated stems are removed after every request.
 
 ## Changelog
 See full version history and updates [here](https://github.com/roopaksai543/Track2Tabs2.0/blob/main/CHANGELOG.md)
